@@ -1,0 +1,224 @@
+<?xml version="1.0"?>
+
+<robot
+    name="agribot" 
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:gazebo="http://playerstage.sourceforge.net/gazebo/xmlschema/#gz"
+    xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+    xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+    xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body"
+    xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom"
+    xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint"
+    xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+    xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+    xmlns:rendering="http://playerstage.sourceforge.net/gazebo/xmlschema/#rendering"
+    xmlns:renderable="http://playerstage.sourceforge.net/gazebo/xmlschema/#renderable"
+    xmlns:physics="http://playerstage.sourceforge.net/gazebo/xmlschema/#physics"
+    xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- Included URDF/XACRO Files -->
+    <xacro:include filename="$(find agribot_description)/urdf/agribot_materials.urdf.xacro"/>
+    <xacro:include filename="$(find agribot_description)/urdf/agribot_parts.urdf.xacro"/>
+
+    <!-- Inertia matrices -->
+  <xacro:include filename="$(find stereocam_test_description)/robot/macros.xacro" />
+  <!-- Robot constants and properties -->
+  <xacro:include filename="$(find stereocam_test_description)/robot/contact_robot_properties.xacro" />
+  <!-- Import Rviz colors -->
+  <xacro:include filename="$(find stereocam_test_description)/robot/materials.xacro" />
+  <!-- Body -->
+  <xacro:include filename="$(find stereocam_test_description)/robot/head.xacro" />
+  <!-- Arms -->
+  <xacro:include filename="$(find stereocam_test_description)/robot/eyes.xacro" />
+
+  <body/>
+
+
+  <eye lr="left" tY="-1"/>
+  <eye lr="right" tY="1"/>
+       
+    <!-- PROPERTY LIST -->
+    <!--All units in m-kg-s-radians unit system -->
+  <property name="M_PI" value="3.1415926535897931" />
+
+ 	<property name="ns" value="agribot" />
+    <link name="dummy_link">
+    </link>
+  
+    <joint name="dummy_link_to_base_link" type="fixed">
+    	<origin xyz="0 0 0.26" rpy="0 0 0" />
+        <parent link="dummy_link"/>
+        <child link="base_link"/>
+    </joint>
+
+    <gazebo reference="dummy_link">
+    	<material>Gazebo/WoodBrown</material>        
+    	<turnGravityOff>false</turnGravityOff>
+    </gazebo>
+
+
+    <!-- BASE-LINK -->
+    <link name="base_link">
+        <inertial>
+            <mass value="3.4672" />
+            <origin xyz="0 0 0" rpy="0 0 0"	 />
+            <inertia
+          		ixx="0.045731"    ixy="-1.5439E-12"        ixz="-8.4448E-09"
+          		iyy="0.077236"        iyz="1.5494E-12"        izz="0.049938" />
+        </inertial>
+        
+        <visual>
+            <origin xyz="0 0 0" rpy="1.57 0 3.14"/>
+            <geometry>
+		          <mesh filename="package://agribot_description/meshes/base_link.STL"/>
+            </geometry>
+            <material name="White"/>
+        </visual>
+    
+        <collision>
+          <origin xyz="0 0 0" rpy="1.57 0 3.14" />
+          <geometry>
+		        <mesh filename="package://agribot_description/meshes/base_link.STL"/>
+          </geometry>
+        </collision>     
+    </link>
+    <gazebo reference="base_link">
+        <material>Gazebo/White</material>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+
+	<!--Wheels-->
+    <!-- right_wheel_Back -->
+    <agribot_part parent="base_link" name="right_wheel_R"  
+          translateX="-0.2519" translateY="-0.3908" translateZ="-0.1908" 
+          rotateX="0.0" rotateY="0.0" rotateZ="1.57"
+          color="White" />
+    <gazebo reference="right_wheel_R">
+        <material>Gazebo/DarkGray</material>
+	      <mu1>1.0</mu1>
+        <mu2>1.0</mu2>
+    	  <kp  value="10000000.0" />
+       	<kd  value="1.0" />
+      	<fdir1 value="1 0 0"/>
+    </gazebo>
+
+    <!-- left_wheel_back -->
+    <agribot_part parent="base_link" name="left_wheel_R"  			
+          translateX="-0.2519" translateY="0.3908" translateZ="-0.1908" 
+          rotateX="0.0" rotateY="0.0" rotateZ="1.57"
+          color="White" />
+    <gazebo reference="left_wheel_R">
+        <material>Gazebo/DarkGray</material>
+      	<mu1>1.0</mu1>
+              <mu2>1.0</mu2>
+      	<kp  value="10000000.0" />
+        	<kd  value="1.0" />
+        	<fdir1 value="1 0 0"/>
+    </gazebo>
+
+    <!-- right_wheel_front -->
+    <agribot_part parent="base_link" name="right_wheel_F"  
+          translateX="0.2519" translateY="-0.3908" translateZ="-0.1908"
+          rotateX="0.0" rotateY="0.0" rotateZ="1.57"
+          color="White" />
+    <gazebo reference="right_wheel_F">
+          <material>Gazebo/DarkGray</material>
+        	<mu1>1.0</mu1>
+          	<mu2>1.0</mu2>
+        	<kp  value="10000000.0" />
+          	<kd  value="1.0" />
+          	<fdir1 value="1 0 0"/>
+    </gazebo>
+
+    <!-- left_wheel_front -->
+    <agribot_part parent="base_link" name="left_wheel_F"  
+	  translateX="0.2519" translateY="0.3908" translateZ="-0.1908" 
+          rotateX="0.0" rotateY="0.0" rotateZ="1.57"
+          color="White" />
+    <gazebo reference="left_wheel_F">
+        <material>Gazebo/DarkGray</material>
+      	<mu1>1.0</mu1>
+        	<mu2>1.0</mu2>
+      	<kp  value="10000000.0" />
+       	<kd  value="1.0" />
+       	<fdir1 value="1 0 0"/>
+    </gazebo>
+
+    <link name="support_stereo">
+      <visual>
+        <origin xyz="-0.2 0 0.06" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.1215" radius="0.025"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="-0.2 0 0.06" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.1215" radius="0.025"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="stereo_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="support_stereo"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+
+    <link name="support_scan">
+      <visual>
+        <origin xyz="-0.035 0 0.012" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.0415" radius="0.055"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="-0.035 0 0.012" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.0415" radius="0.055"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="support_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="support_scan"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+
+  <link name="base_scan">
+    <visual>
+      <origin xyz="0 0 -0.11" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://turtlebot3_description/meshes/sensors/lds.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="dark"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0.015 0 -0.1165" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.0315" radius="0.055"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.114" />
+      <origin xyz="0 0 -0.11" />
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+               iyy="0.001" iyz="0.0"
+               izz="0.001" />
+    </inertial>
+  </link>
+
+  <joint name="scan_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_scan"/>
+    <origin xyz="-0.032 0 0.172" rpy="0 0 0"/>
+  </joint>
+
+
+        
+</robot>

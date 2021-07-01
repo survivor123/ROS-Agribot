@@ -1,0 +1,32 @@
+<launch>
+	<include file="$(find gazebo_ros)/launch/empty_world.launch">	    
+		<arg name="world_name" value="$(find agribot_description)/worlds/Farm.world"/>	    
+		<arg name="gui" value="true"/>
+		<arg name="recording" default="true"/>	  
+	</include>
+
+	<!-- urdf xml robot description loaded on the Parameter Server, converting the xacro into a proper urdf file-->
+	<param name="robot_description" command="$(find xacro)/xacro '$(find agribot_description)/urdf/agribot_sensors.urdf.xacro'" />
+	<!-- push robot_description to factory and spawn robot in gazebo -->
+	<node name="agribot_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
+ 		args="-urdf -x 1.85 -y 0.5789 -z 0 -param robot_description  -model agribot"/>
+
+	<include file="$(find agribot_control)/launch/agribot_control.launch"/>
+
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
+		<param name="use_gui" value="False"/>
+		<!--<remap from="/joint_state_publisher" to="/agribot/joint_states" />-->
+		 <rosparam param="/source_list">[agribot/joint_states]</rosparam>
+	</node>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+		<remap from="/joint_states" to="/agribot/joint_states" />
+	</node>
+
+	<node
+	    name="tf_"
+	    pkg="tf"
+	    type="static_transform_publisher"
+	    args="0 0 0 0 0 0 odom map 100"
+	      ns="agribot"	 />
+
+</launch>
